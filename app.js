@@ -36,4 +36,37 @@
 const http = require('http');
 const fs = require('fs');
 // creating server
+const server = http.createServer((req,res)=>{
+    if(req.url === "/"){
+    res.setHeader('Content-Type','text/html');
+    res.write('<html>');
+    res.write('<head><title>First Node JS Server Response</title></head>');
+    res.write('<body><form action="/message" method="POST"><input type="text" name="message"/><button type="submit">Submit The Message</button></form></body');
+    res.write('</html>');
+    return res.end();
+    }
+    if(req.url === "/message" && req.method === "POST"){
+        const body = [];
+        req.on('data',(chunk)=>{
+            body.push(chunk);
+        });
+        req.on('end',()=>{
+            const parsedBody = Buffer.concat(body).toString();
+            const text = parsedBody.split("=")[1];
+            fs.writeFileSync('newFile.txt',text);
+            console.log("Written file successfully");
+        });
+        res.statusCode = 302;
+        res.setHeader('Location','/');
+        return res.end();
+    }
+    res.setHeader('Content-Type','text/html');
+    res.write('<html>');
+    res.write('<head><title>First Node JS Server Response</title></head>');
+    res.write('<body><h1>Welcome to the node js server created by Tansim Anjum Anim</h1></body');
+    res.write('</html>');
+    res.end();
+});
+// /////////////////    LISTENNING TO THE PORT ////////////////
+server.listen(8080);
 
